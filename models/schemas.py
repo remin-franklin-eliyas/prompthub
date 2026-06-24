@@ -23,4 +23,14 @@ class TestCase:
     id: int
     prompt_id: int
     name: str
+    input: str
     created_at: datetime
+
+@dataclass
+class TestResult:
+    id: int
+    version_id: int
+    test_case_id: int
+    output: str
+    model: str
+    ran_at: datetime

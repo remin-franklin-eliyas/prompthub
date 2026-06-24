@@ -139,3 +139,44 @@ def get_latest_version(prompt_id: int) -> Version | None:
     ).fetchone()
     conn.close()
     return Version(**dict(row)) if row else None
+
+def add_test_case(prompt_id: int, name: str, input_text: str):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO test_cases (prompt_id, name, input) VALUES (?, ?, ?)",
+        (prompt_id, name, input_text)
+    )
+    conn.commit()
+    conn.close()
+
+
+def get_test_cases(prompt_id: int):
+    from models.schemas import TestCase
+    conn = get_connection()
+    rows = conn.execute(
+        "SELECT * FROM test_cases WHERE prompt_id = ?", (prompt_id,)
+    ).fetchall()
+    conn.close()
+    return [TestCase(**dict(r)) for r in rows]
+
+
+def add_test_result(version_id: int, test_case_id: int, output: str, model: str):
+    conn = get_connection()
+    conn.execute(
+        """INSERT INTO test_results (version_id, test_case_id, output, model)
+           VALUES (?, ?, ?, ?)""",
+        (version_id, test_case_id, output, model)
+    )
+    conn.commit()
+    conn.close()
+
+
+def get_test_results(version_id: int):
+    from models.schemas import TestResult
+    conn = get_connection()
+    rows = conn.execute(
+        "SELECT * FROM test_results WHERE version_id = ?", (version_id,)
+    ).fetchall()
+    conn.close()
+    return [TestResult(**dict(r)) for r in rows]

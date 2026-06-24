@@ -136,3 +136,20 @@ def render_banner():
     console.print(f"[bold cyan]{banner}[/bold cyan]")
     console.print("[dim]  version control for prompts[/dim]")
     console.print("[dim]  v0.1.0 · built by Remin Franklin[/dim]\n")
+
+def render_regression(comparisons: list[dict], v1_tag: str, v2_tag: str):
+    console.print(f"\n[bold]REGRESSION REPORT[/bold]  "
+                  f"[cyan]{v1_tag}[/cyan] → [cyan]{v2_tag}[/cyan]\n")
+    console.print("─" * 45)
+
+    for comp in comparisons:
+        status_color = "green" if comp["status"] == "STABLE" else "yellow"
+        console.print(f"\n[bold]Test:[/bold] [white]{comp['test_name']}[/white]")
+        console.print(f"  Status:        [{status_color}]{comp['status']}[/{status_color}]")
+        console.print(f"  Semantic shift: {comp['distance']}  "
+                      f"[dim]({comp['description']})[/dim]")
+        console.print(f"\n  [dim]v1 output:[/dim]")
+        console.print(f"  [white]{comp['v1_output'][:200]}[/white]")
+        console.print(f"\n  [dim]v2 output:[/dim]")
+        console.print(f"  [cyan]{comp['v2_output'][:200]}[/cyan]")
+        console.print("")

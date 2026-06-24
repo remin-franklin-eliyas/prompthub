@@ -14,6 +14,8 @@ from core.renderer import (
     render_rollback_success, render_prompt_list,
     render_init_success, render_banner, render_diff
 )
+from core.db import add_test_case, get_test_cases
+from core.renderer import render_regression
 
 console = Console()
 
@@ -219,6 +221,78 @@ def rollback(
     add_version(p.id, new_tag, target.content, f"rollback to {version}")
     render_rollback_success(version, new_tag)
 
+@app.command("test-add")
+def test_add(
+    name: str = typer.Option(..., "--name", "-n", help="Test case name"),
+    input_text: str = typer.Option(..., "--input", "-i", help="Input text"),
+    prompt: str = typer.Option(None, "--prompt", "-p", help="Prompt name")
+):
+    """Add a test case for regression testing."""
+    if not Path(".prompthub/prompthub.db").exists():
+        render_error("No repository found. Run: prompthub init")
+        raise typer.Exit(1)
+
+    if prompt:
+        p = get_prompt(prompt)
+    else:
+        prompts = get_all_prompts()
+        if len(prompts) > 1:
+            render_error("Multiple prompts tracked. Specify one with --prompt <name>")
+            raise typer.Exit(1)
+        p = prompts[0]
+
+    if not p:
+        render_error("Prompt not found.")
+        raise typer.Exit(1)
+
+    add_test_case(p.id, name, input_text)
+    render_success(f"Test case added: [bold cyan]{name}[/bold cyan]")
+
+
+@app.command("test-run")
+def test_run(
+    v1: str = typer.Argument(..., help="First version tag e.g. v1"),
+    v2: str = typer.Argument(..., help="Second version tag e.g. v2"),
+    prompt: str = typer.Option(None, "--prompt", "-p", help="Prompt name"),
+    model: str = typer.Option("llama3.2", "--model", "-m", help="Ollama model to use")
+):
+    """Run regression tests between two versions."""
+    if not Path(".prompthub/prompthub.db").exists():
+        render_error("No repository found. Run: prompthub init")
+        raise typer.Exit(1)
+
+    if prompt:
+        p = get_prompt(prompt)
+    else:
+        prompts = get_all_prompts()
+        if len(prompts) > 1:
+            render_error("Multiple prompts tracked. Specify one with --prompt <name>")
+            raise typer.Exit(1)
+        p = prompts[0]
+
+    if not p:
+        render_error("Prompt not found.")
+        raise typer.Exit(1)
+
+    version1 = get_version(p.id, v1)
+    version2 = get_version(p.id, v2)
+
+    if not version1 or not version2:
+        render_error("One or both versions not found.")
+        raise typer.Exit(1)
+
+    from core.regression import compare_regression
+    render_success(f"Running regression: {v1} → {v2}...")
+
+    try:
+        comparisons = compare_regression(p.id, version1, version2, model)
+        if not comparisons:
+            render_error("No test cases found. Add one with: prompthub test-add")
+            raise typer.Exit(1)
+        render_regression(comparisons, v1, v2)
+    except RuntimeError as e:
+        render_error(str(e))
+        raise typer.Exit(1)
 
 if __name__ == "__main__":
     app()
