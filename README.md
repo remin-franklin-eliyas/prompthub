@@ -14,19 +14,16 @@ and behavioural regression testing.
 
 ## Installation
 
+## Installation
+
 ```bash
-git clone https://github.com/remin-franklin-eliyas/prompthub.git
-cd prompthub
-python3 -m venv venv
-source venv/bin/activate
-pip install -e .
+pip install prompthub-cli
 ```
 
 Requires [Ollama](https://ollama.com) for regression testing:
 ```bash
 ollama pull llama3.2
 ```
-
 ## Usage
 
 ```bash
