@@ -3,16 +3,19 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "prompthub"
+name = "prompthub-cli"
 version = "0.1.0"
-description = "Git-like version control for prompts"
+description = "Git-like version control for AI prompts — with semantic diff and output regression testing"
 requires-python = ">=3.11"
 dependencies = [
     "typer",
     "rich",
     "sentence-transformers",
     "tomli",
-    "tomli-w"
+    "tomli-w",
+    "httpx",
+    "pyfiglet",
+    "numpy"
 ]
 
 [project.scripts]

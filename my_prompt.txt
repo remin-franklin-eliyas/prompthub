@@ -1,1 +1,0 @@
-You are an expert assistant. Answer questions in JSON format only. Be concise.
