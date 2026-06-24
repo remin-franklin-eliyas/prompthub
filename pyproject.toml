@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "prompthub"
+version = "0.1.0"
+description = "Git-like version control for prompts"
+requires-python = ">=3.11"
+dependencies = [
+    "typer",
+    "rich",
+    "sentence-transformers",
+    "tomli",
+    "tomli-w"
+]
+
+[project.scripts]
+prompthub = "cli.main:app"
+
+[tool.setuptools.packages.find]
+include = ["cli*", "core*", "models*"]

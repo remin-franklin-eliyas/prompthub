@@ -1,0 +1,97 @@
+from rich.console import Console
+from rich.table import Table
+from rich.panel import Panel
+from rich.columns import Columns
+from rich import box
+from models.schemas import Version
+import pyfiglet
+
+console = Console()
+
+
+def render_success(message: str):
+    console.print(f"[bold green]✓[/bold green] {message}")
+
+
+def render_error(message: str):
+    console.print(f"[bold red]✗[/bold red] {message}")
+
+
+def render_commit_success(prompt_name: str, version_tag: str, message: str):
+    console.print(
+        f"[bold green]✓[/bold green] Committed "
+        f"[bold cyan]{version_tag}[/bold cyan] of "
+        f"[bold]{prompt_name}[/bold] — {message}"
+    )
+
+
+def render_log(prompt_name: str, versions: list[Version]):
+    if not versions:
+        render_error(f"No versions found for '{prompt_name}'")
+        return
+
+    table = Table(
+        title=f"Version History — {prompt_name}",
+        box=box.ROUNDED,
+        show_lines=True
+    )
+
+    table.add_column("Version", style="bold cyan", width=10)
+    table.add_column("Message", style="white")
+    table.add_column("Committed At", style="dim", width=22)
+
+    for v in reversed(versions):
+        table.add_row(
+            v.version_tag,
+            v.message,
+            str(v.committed_at)
+        )
+
+    console.print(table)
+
+
+def render_rollback_success(target_tag: str, new_tag: str):
+    console.print(
+        f"[bold green]✓[/bold green] Rolled back to "
+        f"[bold cyan]{target_tag}[/bold cyan]. "
+        f"New commit created: [bold cyan]{new_tag}[/bold cyan]"
+    )
+
+
+def render_prompt_list(prompts):
+    if not prompts:
+        render_error("No prompts being tracked. Run: prompthub add <file>")
+        return
+
+    table = Table(
+        title="Tracked Prompts",
+        box=box.ROUNDED,
+        show_lines=True
+    )
+
+    table.add_column("Name", style="bold cyan")
+    table.add_column("Filepath", style="white")
+    table.add_column("Created At", style="dim", width=22)
+
+    for p in prompts:
+        table.add_row(p.name, p.filepath, str(p.created_at))
+
+    console.print(table)
+
+
+def render_init_success(repo_name: str):
+    console.print(
+        Panel(
+            f"[bold green]Initialised PromptHub repository[/bold green]\n"
+            f"[dim]Name:[/dim] [bold]{repo_name}[/bold]\n"
+            f"[dim]Database:[/dim] .prompthub/prompthub.db",
+            title="[bold]PromptHub[/bold]",
+            box=box.ROUNDED
+        )
+    )
+
+def render_banner():
+    banner = pyfiglet.figlet_format("PromptHub", font="doom")
+    console.print(f"[bold cyan]{banner}[/bold cyan]")
+    console.print("[dim]  version control for prompts[/dim]")
+    console.print("[dim]  v0.1.0 · built by Remin Franklin[/dim]\n")
