@@ -1,5 +1,0 @@
-typer
-rich
-sentence-transformers
-tomli
-tomli-w

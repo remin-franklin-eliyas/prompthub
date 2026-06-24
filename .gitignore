@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+*.pyc
+.prompthub/
+prompthub.egg-info/
+*.db
+test_prompt.txt
