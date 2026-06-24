@@ -90,6 +90,47 @@ def render_init_success(repo_name: str):
         )
     )
 
+def render_diff(diff: dict):
+    distance = diff["distance"]
+    description = diff["description"]
+    structural = diff["structural_changes"]
+    char_delta = diff["char_delta"]
+
+    console.print(f"\n[bold]PROMPT DIFF[/bold]  "
+                  f"[cyan]{diff['v1_tag']}[/cyan] → [cyan]{diff['v2_tag']}[/cyan]\n")
+    console.print("─" * 45)
+
+    if distance is not None:
+        color = "green" if distance < 0.25 else "yellow" if distance < 0.45 else "red"
+        console.print(f"Semantic distance:  [{color}]{distance}[/{color}]  "
+                      f"[dim]({description})[/dim]\n")
+    else:
+        console.print("[yellow]No embeddings found. Commit both versions first.[/yellow]\n")
+
+    if structural:
+        console.print("[bold]STRUCTURAL CHANGES[/bold]")
+        for change in structural:
+            if change["type"] == "added":
+                console.print(f"  [green]+[/green] Added: {change['category']} "
+                              f"[dim]{change.get('detail', '')}[/dim]")
+            elif change["type"] == "removed":
+                console.print(f"  [red]-[/red] Removed: {change['category']} "
+                              f"[dim]{change.get('detail', '')}[/dim]")
+            elif change["type"] == "modified":
+                console.print(f"  [yellow]~[/yellow] Modified: {change['category']} "
+                              f"[dim]{change.get('detail', '')}[/dim]")
+    else:
+        console.print("[bold]STRUCTURAL CHANGES[/bold]")
+        console.print("  [dim]No structural changes detected[/dim]")
+
+    console.print(f"\n[bold]CHARACTER DELTA[/bold]")
+    console.print(f"  v1: {diff['v1_chars']} chars")
+    console.print(f"  v2: {diff['v2_chars']} chars")
+
+    delta_color = "green" if char_delta < 0 else "red" if char_delta > 0 else "dim"
+    sign = "+" if char_delta > 0 else ""
+    console.print(f"  Δ:  [{delta_color}]{sign}{char_delta} chars[/{delta_color}]\n")
+
 def render_banner():
     banner = pyfiglet.figlet_format("PromptHub", font="doom")
     console.print(f"[bold cyan]{banner}[/bold cyan]")
