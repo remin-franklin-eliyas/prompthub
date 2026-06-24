@@ -103,4 +103,3 @@ v2 output: {"capital": "Paris"}
 ## Built by
 
 Remin Franklin — [GitHub](https://github.com/remin-franklin-eliyas) · [LinkedIn](https://linkedin.com/in/remin-franklin-eliyas)
-EOF
