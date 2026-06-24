@@ -6,16 +6,16 @@ build-backend = "setuptools.build_meta"
 name = "prompthub-cli"
 version = "0.1.0"
 description = "Git-like version control for AI prompts — with semantic diff and output regression testing"
+readme = "DESCRIPTION.md"
 requires-python = ">=3.11"
-dependencies = [
-    "typer",
-    "rich",
-    "sentence-transformers",
-    "tomli",
-    "tomli-w",
-    "httpx",
-    "pyfiglet",
-    "numpy"
+license = {text = "MIT"}
+keywords = ["cli", "prompt", "llm", "ai", "version-control", "developer-tools"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Version Control",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 
 [project.scripts]
